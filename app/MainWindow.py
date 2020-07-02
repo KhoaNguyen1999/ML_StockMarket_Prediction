@@ -41,7 +41,7 @@ class Ui_MainWindow(object):
         self.browseGroupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.browseGroupBox.setGeometry(QtCore.QRect(30, 10, 1221, 121))
         self.browseGroupBox.setObjectName("browseGroupBox")
-        self.browseButton = QtWidgets.QPushButton(self.browseGroupBox)
+        self.browseButton = QtWidgets.QPushButton(self.centralwidget)
         self.browseButton.setGeometry(QtCore.QRect(900, 40, 101, 41))
         self.browseButton.setObjectName("browseButton")
 
