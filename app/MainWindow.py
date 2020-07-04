@@ -15,11 +15,46 @@ from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
 from pathlib import Path
+from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
+from matplotlib.figure import Figure
+
+
+import matplotlib
+import pyqtgraph as pg
 import numpy as np
 import pandas as pd
 import math
 import csv
 import os.path, time
+
+matplotlib.use('Qt5Agg')
+
+class MplCanvas(FigureCanvasQTAgg):
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100, optionName = "", filePath=""):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        fig.suptitle(optionName + " Price History")# name title
+        self.axes = fig.add_subplot(111)
+        self.axes.set_ylabel(ylabel=optionName + " Price Price USD")
+        self.axes.set_xlabel(xlabel="Date")
+        FigureCanvasQTAgg.__init__(self,fig)
+        self.setParent(parent)
+        self.plot_value(filePath)
+
+    def plot_value(self,filePath):
+        # Create our pandas DataFrame with some simple
+        # data and headers.
+        df = pd.read_csv(filePath)
+        df["Date"] = pd.to_datetime(df['Date'])
+        df.set_index('Date', inplace=True)
+        df.set_index('Close', inplace=False)
+        #df=df['Close']
+        df=pd.DataFrame(df[['Close','High']],columns=['Close','High'])
+
+        # plot the pandas DataFrame, passing in the
+        # matplotlib Canvas axes.
+        df.plot(ax=self.axes)
+        #HistoryPlotWindow.setCentralWidget(sc)
 
 
 class Ui_MainWindow(object):
@@ -193,6 +228,15 @@ class Ui_MainWindow(object):
             self.dataFileName = Path(str).stem
             # Populate dataTableView with data in the file
             self.loadCsv(str)
+            #760, 20, 651, 351
+            sc = MplCanvas(MainWindow, width=6, height=3, dpi=100, optionName = 'Close', filePath = str)  # change in here
+            sc.move(800,250)
+            sc.show()
+            print()
+            #ui = Ui_MainWindow()
+            #ui.setupUi(MainWindow)
+            
+            
 
     # Get full path as string  from openFileDialog
     def listToString(self, s):
@@ -214,6 +258,8 @@ class Ui_MainWindow(object):
                     for field in row
                 ]
                 self.model.appendRow(items)
+
+
 
     # endregion
 
