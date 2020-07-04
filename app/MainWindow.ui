@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1314</width>
-    <height>956</height>
+    <width>1436</width>
+    <height>1139</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,18 +19,18 @@
      <rect>
       <x>30</x>
       <y>10</y>
-      <width>1221</width>
+      <width>671</width>
       <height>121</height>
      </rect>
     </property>
     <property name="title">
-     <string>Browse</string>
+     <string>Choose Data File</string>
     </property>
     <widget class="QPushButton" name="browseButton">
      <property name="geometry">
       <rect>
-       <x>900</x>
-       <y>40</y>
+       <x>540</x>
+       <y>60</y>
        <width>101</width>
        <height>41</height>
       </rect>
@@ -42,9 +42,9 @@
     <widget class="QLabel" name="selectedLabel">
      <property name="geometry">
       <rect>
-       <x>130</x>
-       <y>50</y>
-       <width>711</width>
+       <x>0</x>
+       <y>20</y>
+       <width>641</width>
        <height>31</height>
       </rect>
      </property>
@@ -66,8 +66,8 @@
      <rect>
       <x>10</x>
       <y>200</y>
-      <width>1271</width>
-      <height>721</height>
+      <width>1411</width>
+      <height>911</height>
      </rect>
     </property>
     <property name="title">
@@ -76,26 +76,75 @@
     <widget class="QTableView" name="fileDataTableView">
      <property name="geometry">
       <rect>
-       <x>20</x>
-       <y>40</y>
-       <width>1241</width>
-       <height>691</height>
+       <x>0</x>
+       <y>30</y>
+       <width>721</width>
+       <height>341</height>
       </rect>
      </property>
     </widget>
-   </widget>
-   <widget class="QPushButton" name="showDataButton">
-    <property name="geometry">
-     <rect>
-      <x>1020</x>
-      <y>140</y>
-      <width>121</width>
-      <height>41</height>
-     </rect>
-    </property>
-    <property name="text">
-     <string>Show Data History</string>
-    </property>
+    <widget class="QComboBox" name="dataComboBox">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>380</y>
+       <width>91</width>
+       <height>31</height>
+      </rect>
+     </property>
+    </widget>
+    <widget class="QPushButton" name="showDataButton">
+     <property name="geometry">
+      <rect>
+       <x>100</x>
+       <y>380</y>
+       <width>121</width>
+       <height>41</height>
+      </rect>
+     </property>
+     <property name="text">
+      <string>Show Data History</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox">
+     <property name="geometry">
+      <rect>
+       <x>760</x>
+       <y>20</y>
+       <width>651</width>
+       <height>351</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Plot History</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_2">
+     <property name="geometry">
+      <rect>
+       <x>0</x>
+       <y>430</y>
+       <width>721</width>
+       <height>351</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Predict Data</string>
+     </property>
+    </widget>
+    <widget class="QGroupBox" name="groupBox_3">
+     <property name="geometry">
+      <rect>
+       <x>750</x>
+       <y>430</y>
+       <width>651</width>
+       <height>351</height>
+      </rect>
+     </property>
+     <property name="title">
+      <string>Prediction Diagram</string>
+     </property>
+    </widget>
    </widget>
    <widget class="QPushButton" name="showPredictionButton">
     <property name="geometry">
@@ -110,24 +159,14 @@
      <string>Show Prediction</string>
     </property>
    </widget>
-   <widget class="QComboBox" name="dataComboBox">
-    <property name="geometry">
-     <rect>
-      <x>920</x>
-      <y>140</y>
-      <width>91</width>
-      <height>31</height>
-     </rect>
-    </property>
-   </widget>
   </widget>
   <widget class="QMenuBar" name="menubar">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>1314</width>
-     <height>21</height>
+     <width>1436</width>
+     <height>26</height>
     </rect>
    </property>
   </widget>
