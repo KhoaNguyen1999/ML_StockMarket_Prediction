@@ -13,26 +13,44 @@ import matplotlib
 
 matplotlib.use('Qt5Agg')
 
-from PyQt5 import QtCore, QtWidgets
+from PyQt5 import QtCore, QtWidgets,QtGui
 
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg
 from matplotlib.figure import Figure
+import pyqtgraph as pg
 
 import pandas as pd
 
 
 class MplCanvas(FigureCanvasQTAgg):
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100, optionName = ""):
+    def __init__(self, parent=None, width=5, height=4, dpi=100, optionName = "", filePath=""):
         fig = Figure(figsize=(width, height), dpi=dpi)
         fig.suptitle(optionName + " Price History")# name title
         self.axes = fig.add_subplot(111)
         self.axes.set_ylabel(ylabel=optionName + " Price Price USD")
         self.axes.set_xlabel(xlabel="Date")
-        super(MplCanvas, self).__init__(fig)
+        FigureCanvasQTAgg.__init__(self,fig)
+        self.setParent(parent)
+        self.plot_value(filePath)
+
+    def plot_value(self,filePath):
+        # Create our pandas DataFrame with some simple
+        # data and headers.
+        df = pd.read_csv(filePath)
+        df["Date"] = pd.to_datetime(df['Date'])
+        df.set_index('Date', inplace=True)
+        df.set_index('Close', inplace=False)
+        #df=df['Close']
+        df=pd.DataFrame(df[['Close','High']],columns=['Close','High'])
+
+        # plot the pandas DataFrame, passing in the
+        # matplotlib Canvas axes.
+        df.plot(ax=self.axes)
+        #HistoryPlotWindow.setCentralWidget(sc)
 
 
-class Ui_HistoryPlotWindow(QtWidgets.QMainWindow):
+class Ui_HistoryPlotWindow(object):
 
     def __init__(self,predictOption, dataFilePath):
         self.predictOption = predictOption
@@ -44,6 +62,11 @@ class Ui_HistoryPlotWindow(QtWidgets.QMainWindow):
         self.centralwidget = QtWidgets.QWidget(HistoryPlotWindow)
         self.centralwidget.setObjectName("centralwidget")
         HistoryPlotWindow.setCentralWidget(self.centralwidget)
+
+        self.trainButton = QtWidgets.QPushButton(self.centralwidget)
+        self.trainButton.setGeometry(QtCore.QRect(1000, 40, 101, 41))
+        self.trainButton.setObjectName("trainButton")
+
         self.menubar = QtWidgets.QMenuBar(HistoryPlotWindow)
         self.menubar.setGeometry(QtCore.QRect(0, 0, 1293, 21))
         self.menubar.setObjectName("menubar")
@@ -52,19 +75,10 @@ class Ui_HistoryPlotWindow(QtWidgets.QMainWindow):
         self.statusbar.setObjectName("statusbar")
         HistoryPlotWindow.setStatusBar(self.statusbar)
 
-        sc = MplCanvas(HistoryPlotWindow, width=16, height=8, dpi=100, optionName = self.predictOption)  # change in here
+        sc = MplCanvas(HistoryPlotWindow, width=10, height=4, dpi=100, optionName = self.predictOption, filePath = self.dataFilePath)  # change in here
+        sc.move(0,0)
 
-        # Create our pandas DataFrame with some simple
-        # data and headers.
-        df = pd.read_csv(self.dataFilePath)
-        df["Date"] = pd.to_datetime(df['Date'])
-        df.set_index('Date', inplace=True)
-        df.set_index(self.predictOption, inplace=False)
-        df=df[self.predictOption]
-        # plot the pandas DataFrame, passing in the
-        # matplotlib Canvas axes.
-        df.plot(ax=sc.axes)
-        HistoryPlotWindow.setCentralWidget(sc)
+
 
         self.retranslateUi(HistoryPlotWindow)
         QtCore.QMetaObject.connectSlotsByName(HistoryPlotWindow)

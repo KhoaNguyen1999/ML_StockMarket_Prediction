@@ -14,10 +14,12 @@ from HistoryPlotWindow import Ui_HistoryPlotWindow
 from sklearn.preprocessing import MinMaxScaler
 from keras.models import Sequential
 from keras.layers import Dense, LSTM
+from pathlib import Path
 import numpy as np
 import pandas as pd
 import math
 import csv
+import os.path, time
 
 
 class Ui_MainWindow(object):
@@ -41,7 +43,7 @@ class Ui_MainWindow(object):
         self.browseGroupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.browseGroupBox.setGeometry(QtCore.QRect(30, 10, 1221, 121))
         self.browseGroupBox.setObjectName("browseGroupBox")
-        self.browseButton = QtWidgets.QPushButton(self.browseGroupBox)
+        self.browseButton = QtWidgets.QPushButton(self.centralwidget)
         self.browseButton.setGeometry(QtCore.QRect(900, 40, 101, 41))
         self.browseButton.setObjectName("browseButton")
 
@@ -109,6 +111,30 @@ class Ui_MainWindow(object):
         self.plotHistoryData()
         self.browseButton_Test.clicked.connect(self.test)
      
+#region update_csv
+    def getCsvLastModified(self):
+        self.lastModFile = time.ctime(os.path.getmtime(self.dataFilePath))
+        #print(time.ctime(os.path.getmtime(self.dataFilePath)))
+
+    def printLogLastModifiedFile(self):
+        self.logFile = self.dataFileName + '\t' + self.lastModFile
+
+
+    def printToLogFile(self):
+        with open('LOG.txt' ,'a+') as f:
+            f.write(self.logFile)
+
+    def checkLog(self):
+        with open('LOG.txt' ,'r') as f:
+            for line in f:
+                if(line == self.logFile):
+                    return False
+        return True
+
+
+
+#endregion
+
 #region dataComboBox   
     def dataComboBoxEvent(self):
         #default option for dataComboBox
@@ -161,6 +187,7 @@ class Ui_MainWindow(object):
             self.changeSelectedLabel(str)
             #Set dataFilePath
             self.dataFilePath = str
+            self.dataFileName = Path(str).stem
             #Populate dataTableView with data in the file
             self.loadCsv(str)
 
@@ -196,42 +223,10 @@ class Ui_MainWindow(object):
 
 #region test_def
     def test(self):
-        df = pd.read_csv(r'G:\University\Machine Learning\a.us.csv')
-        #Create a new dataframe with only close column
-        data = df.filter(['Close'])
-        #Convert dataframe to numpy array
-        dataset = data.values
-        #Get the number of rows to train the model on
-        training_data_len = math.ceil(len(dataset) * .8)
-        scaler = MinMaxScaler(feature_range=(0,1))
-        scaled_data = scaler.fit_transform(dataset)
-
-        #Create the training data set
-        #Create the scaled training data set
-        train_data = scaled_data[0:training_data_len, :]
-        #Split the data into x_train and y_train dataset
-        x_train = []
-        y_train = []
-
-        for i in range(60, len(train_data)):
-            x_train.append(train_data[i-60:i ,0])
-            y_train.append(train_data[i,0])
-            if i <= 60:
-                print(x_train)
-                print(y_train)
-                print()
-
-        x_train, y_train = np.array(x_train) , np.array(y_train)
-        x_train = np.reshape(x_train,(x_train.shape[0],x_train.shape[1],1))
-        x_train.shape
-
-        model = Sequential()
-        model.add(LSTM(50, return_sequences= True ,input_shape = (x_train.shape[1],1)))
-        model.add(LSTM(50, return_sequences = False))
-        model.add(Dense(25))
-        model.add(Dense(1))
-        model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-        model.fit(x_train,y_train, batch_size = 1 , epochs=1)
+        self.getCsvLastModified()
+        self.printLogLastModifiedFile()
+        if(self.checkLog() == True):
+            self.printToLogFile()
 
 #endregion
 
