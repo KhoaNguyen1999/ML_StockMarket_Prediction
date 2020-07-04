@@ -24,71 +24,76 @@ import os.path, time
 
 class Ui_MainWindow(object):
     def onCreate(self):
-        #add global string to share selected option to multiple instance
-        #data value to create plot based on dataset
-        self.currentPredictDataType="Close"
+        # add global string to share selected option to multiple instance
+        # data value to create plot based on dataset
+        self.currentPredictDataType = "Close"
         self.dataFilePath = ''
 
     def openHistoryPlotWindow(self):
         self.historyWindow = QtWidgets.QMainWindow()
-        self.ui = Ui_HistoryPlotWindow(self.currentPredictDataType,self.dataFilePath)
+        self.ui = Ui_HistoryPlotWindow(self.currentPredictDataType, self.dataFilePath)
         self.ui.setupUi(self.historyWindow)
         self.historyWindow.show()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
-        MainWindow.resize(1314, 956)
+        MainWindow.resize(1436, 1139)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
         self.browseGroupBox = QtWidgets.QGroupBox(self.centralwidget)
-        self.browseGroupBox.setGeometry(QtCore.QRect(30, 10, 1221, 121))
+        self.browseGroupBox.setGeometry(QtCore.QRect(30, 10, 671, 121))
         self.browseGroupBox.setObjectName("browseGroupBox")
-        self.browseButton = QtWidgets.QPushButton(self.centralwidget)
-        self.browseButton.setGeometry(QtCore.QRect(900, 40, 101, 41))
+        self.browseButton = QtWidgets.QPushButton(self.browseGroupBox)
+        self.browseButton.setGeometry(QtCore.QRect(540, 60, 101, 41))
         self.browseButton.setObjectName("browseButton")
-
-        self.browseButton_Test = QtWidgets.QPushButton(self.browseGroupBox)
-        self.browseButton_Test.setGeometry(QtCore.QRect(1002, 40, 101, 41))
-        self.browseButton_Test.setObjectName("browseButton_Test")
-
         self.selectedLabel = QtWidgets.QLabel(self.browseGroupBox)
-        self.selectedLabel.setGeometry(QtCore.QRect(10, 50, 890, 31))
+        self.selectedLabel.setGeometry(QtCore.QRect(0, 20, 641, 31))
         font = QtGui.QFont()
         font.setFamily("Times New Roman")
-        font.setPointSize(12)
+        font.setPointSize(14)
         font.setBold(True)
         font.setWeight(75)
         self.selectedLabel.setFont(font)
         self.selectedLabel.setObjectName("selectedLabel")
         self.datGroupBox = QtWidgets.QGroupBox(self.centralwidget)
-        self.datGroupBox.setGeometry(QtCore.QRect(10, 200, 1271, 721))
+        self.datGroupBox.setGeometry(QtCore.QRect(10, 200, 1411, 911))
         self.datGroupBox.setObjectName("datGroupBox")
         self.fileDataTableView = QtWidgets.QTableView(self.datGroupBox)
-        self.fileDataTableView.setGeometry(QtCore.QRect(20, 40, 1241, 691))
+        self.fileDataTableView.setGeometry(QtCore.QRect(0, 30, 721, 341))
         self.fileDataTableView.setObjectName("fileDataTableView")
-        self.showDataButton = QtWidgets.QPushButton(self.centralwidget)
-        self.showDataButton.setGeometry(QtCore.QRect(1020, 140, 121, 41))
+        self.dataComboBox = QtWidgets.QComboBox(self.datGroupBox)
+        self.dataComboBox.setGeometry(QtCore.QRect(0, 380, 91, 31))
+        self.dataComboBox.setObjectName("dataComboBox")
+        self.showDataButton = QtWidgets.QPushButton(self.datGroupBox)
+        self.showDataButton.setGeometry(QtCore.QRect(100, 380, 121, 41))
         self.showDataButton.setObjectName("showDataButton")
+        self.plotHistoryGroupBox = QtWidgets.QGroupBox(self.datGroupBox)
+        self.plotHistoryGroupBox.setGeometry(QtCore.QRect(760, 20, 651, 351))
+        self.plotHistoryGroupBox.setObjectName("groupBox")
+        self.predictDataGroupBox = QtWidgets.QGroupBox(self.datGroupBox)
+        self.predictDataGroupBox.setGeometry(QtCore.QRect(0, 430, 721, 351))
+        self.predictDataGroupBox.setObjectName("groupBox_2")
+        self.predictDiagramGroupBox = QtWidgets.QGroupBox(self.datGroupBox)
+        self.predictDiagramGroupBox.setGeometry(QtCore.QRect(750, 430, 651, 351))
+        self.predictDiagramGroupBox.setObjectName("groupBox_3")
         self.showPredictionButton = QtWidgets.QPushButton(self.centralwidget)
         self.showPredictionButton.setGeometry(QtCore.QRect(1160, 140, 121, 41))
         self.showPredictionButton.setObjectName("showPredictionButton")
-        self.dataComboBox = QtWidgets.QComboBox(self.centralwidget)
-        self.dataComboBox.setGeometry(QtCore.QRect(920, 140, 91, 31))
-        self.dataComboBox.setObjectName("dataComboBox")
         MainWindow.setCentralWidget(self.centralwidget)
         self.menubar = QtWidgets.QMenuBar(MainWindow)
-        self.menubar.setGeometry(QtCore.QRect(0, 0, 1314, 21))
+        self.menubar.setGeometry(QtCore.QRect(0, 0, 1436, 26))
         self.menubar.setObjectName("menubar")
         MainWindow.setMenuBar(self.menubar)
         self.statusbar = QtWidgets.QStatusBar(MainWindow)
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
 
+
         self.addDataToDataComboBox()
-        #Initialize onCreate Variable
+        # Initialize onCreate Variable
         self.onCreate()
 
-        #Event
+        # Event
         self.addEvent()
 
         self.retranslateUi(MainWindow)
@@ -97,140 +102,135 @@ class Ui_MainWindow(object):
     def retranslateUi(self, MainWindow):
         _translate = QtCore.QCoreApplication.translate
         MainWindow.setWindowTitle(_translate("MainWindow", "MainWindow"))
-        self.browseGroupBox.setTitle(_translate("MainWindow", "Browse"))
+        self.browseGroupBox.setTitle(_translate("MainWindow", "Choose Data File"))
         self.browseButton.setText(_translate("MainWindow", "BROWSE"))
-        self.browseButton_Test.setText(_translate("MainWindow", "BROWSE_TEST"))
         self.selectedLabel.setText(_translate("MainWindow", "No file selected"))
         self.datGroupBox.setTitle(_translate("MainWindow", "Display Data"))
         self.showDataButton.setText(_translate("MainWindow", "Show Data History"))
+        self.plotHistoryGroupBox.setTitle(_translate("MainWindow", "Plot History")) #group box
+        self.predictDataGroupBox.setTitle(_translate("MainWindow", "Predict Data")) #group box 2
+        self.predictDiagramGroupBox.setTitle(_translate("MainWindow", "Prediction Diagram")) #group box 3
         self.showPredictionButton.setText(_translate("MainWindow", "Show Prediction"))
 
     def addEvent(self):
         self.dataComboBoxEvent()
         self.browseEvent()
         self.plotHistoryData()
-        self.browseButton_Test.clicked.connect(self.test)
-     
-#region update_csv
+        #self.browseButton_Test.clicked.connect(self.test)
+
+    # region update_csv
     def getCsvLastModified(self):
         self.lastModFile = time.ctime(os.path.getmtime(self.dataFilePath))
-        #print(time.ctime(os.path.getmtime(self.dataFilePath)))
+        # print(time.ctime(os.path.getmtime(self.dataFilePath)))
 
     def printLogLastModifiedFile(self):
         self.logFile = self.dataFileName + '\t' + self.lastModFile
 
-
     def printToLogFile(self):
-        with open('LOG.txt' ,'a+') as f:
+        with open('LOG.txt', 'a+') as f:
             f.write(self.logFile)
 
     def checkLog(self):
-        with open('LOG.txt' ,'r') as f:
+        with open('LOG.txt', 'r') as f:
             for line in f:
-                if(line == self.logFile):
+                if (line == self.logFile):
                     return False
         return True
 
+    # endregion
 
-
-#endregion
-
-#region dataComboBox   
+    # region dataComboBox
     def dataComboBoxEvent(self):
-        #default option for dataComboBox
-        #currentSelected = "Close Price"
+        # default option for dataComboBox
+        # currentSelected = "Close Price"
 
-        #Connect dataComboBox to change selected option
+        # Connect dataComboBox to change selected option
         self.dataComboBox.currentTextChanged.connect(self.dataComboBoxClicked)
 
-
     def addDataToDataComboBox(self):
-        #Add options
-        self.dataComboBox.addItems(["Close Price","Open Price", "Highest", "Lowest"])
+        # Add options
+        self.dataComboBox.addItems(["Close Price", "Open Price", "Highest", "Lowest"])
 
     def dataComboBoxClicked(self, currentSelected):
         currentSelected = self.dataComboBox.currentText()
         self.currentPredictDataType = self.setCurrentPredictionType(currentSelected)
         print(self.currentPredictDataType)
 
-    def setCurrentPredictionType(self,currentSelected):
+    def setCurrentPredictionType(self, currentSelected):
         return {
-            'Close Price':'Close',
-            'Open Price':'Open',
-            'Highest':'High',
-            'Lowest':'Low'
-        }.get(currentSelected,'Close')
+            'Close Price': 'Close',
+            'Open Price': 'Open',
+            'Highest': 'High',
+            'Lowest': 'Low'
+        }.get(currentSelected, 'Close')
 
-#endregion
+    # endregion
 
-#region browse
-    #Browse Event
+    # region browse
+    # Browse Event
     def browseEvent(self):
         self.setModelDataTableView()
         self.browseButton.clicked.connect(self.openFileDialog)
 
-    #set model for fileDataTableView
+    # set model for fileDataTableView
     def setModelDataTableView(self):
         self.model = QtGui.QStandardItemModel(self.centralwidget)
         self.fileDataTableView.setModel(self.model)
         self.fileDataTableView.horizontalHeader().setStretchLastSection(True)
 
-    #Create openfile dialog when browse button cliked
+    # Create openfile dialog when browse button cliked
     def openFileDialog(self):
         dlg = QFileDialog()
         dlg.setFileMode(QFileDialog.AnyFile)
         if dlg.exec_():
             filenames = dlg.selectedFiles()
-            #Get string of selected file
+            # Get string of selected file
             str = self.listToString(filenames)
-            #Change currentTextlabel with selected file path
+            # Change currentTextlabel with selected file path
             self.changeSelectedLabel(str)
-            #Set dataFilePath
+            # Set dataFilePath
             self.dataFilePath = str
             self.dataFileName = Path(str).stem
-            #Populate dataTableView with data in the file
+            # Populate dataTableView with data in the file
             self.loadCsv(str)
 
-    #Get full path as string  from openFileDialog
+    # Get full path as string  from openFileDialog
     def listToString(self, s):
-        str1 =""
+        str1 = ""
         for word in s:
             str1 = str1 + word
         return str1
 
-    #Change currentTextlabel with selected file path
-    def changeSelectedLabel(self,text):
+    # Change currentTextlabel with selected file path
+    def changeSelectedLabel(self, text):
         self.selectedLabel.setText(text)
 
-    #Populate dataTableView with data in the file
+    # Populate dataTableView with data in the file
     def loadCsv(self, fileName):
         with open(fileName, "r") as fileInput:
-            for row in csv.reader(fileInput):    
+            for row in csv.reader(fileInput):
                 items = [
                     QtGui.QStandardItem(field)
                     for field in row
                 ]
                 self.model.appendRow(items)
 
-#endregion
+    # endregion
 
-
-#region plot history data
+    # region plot history data
     def plotHistoryData(self):
         self.showDataButton.clicked.connect(self.openHistoryPlotWindow)
 
-#endregion
+    # endregion
 
-#region test_def
+    # region test_def
     def test(self):
         self.getCsvLastModified()
         self.printLogLastModifiedFile()
-        if(self.checkLog() == True):
+        if (self.checkLog() == True):
             self.printToLogFile()
 
-#endregion
-
-
+# endregion
 
 if __name__ == "__main__":
     import sys
