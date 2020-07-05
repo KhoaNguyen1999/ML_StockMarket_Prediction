@@ -25,6 +25,7 @@ import pandas as pd
 import math
 import csv
 import os.path, time
+import datetime as dtime
 from sklearn.tree import DecisionTreeRegressor
 from sklearn.linear_model import LinearRegression
 from sklearn.model_selection import train_test_split
@@ -123,17 +124,19 @@ class MplCanvas_Linear(FigureCanvasQTAgg):
         self.setParent(parent)
         self.plot_value(filePath)
 
-    def plot_value(filePath):
+    def plot_value(self,filePath):
         df = pd.read_csv(filePath)
+        dt=df["Date"]
+        df['Date'] = pd.to_datetime(df['Date'])
+        df['Date']=df['Date'].map(dtime.datetime.toordinal)
         #Create a variable to predict 'x' days out into the future
-        future_days = 25
+        future_days = 60
         #Create a new column (the target or dependent variable) shifted 'x' units/days up
         df['Prediction'] = df[['Close']].shift(-future_days)
         X = np.array(df.drop(['Prediction'], 1))[:-future_days]
         y = np.array(df['Prediction'])[:-future_days]
         
         x_train, x_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
-
         #Create the linear regression model
         lr = LinearRegression().fit(x_train, y_train)
 
@@ -156,10 +159,71 @@ class MplCanvas_Linear(FigureCanvasQTAgg):
         valid['Predictions'] = predictions #Create a new column called 'Predictions' that will hold the predicted prices
         # Create our pandas DataFrame with some simple
         # data and headers.
-        dt=df["Date"]
-        df["Date"] = pd.to_datetime(df['Date'])
         
+        df_1= pd.DataFrame(df[['Close']])
+        df_1['Date'] = dt
+        df_1["Date"] = pd.to_datetime(df_1['Date'])
 
+
+        df_2 = pd.DataFrame(valid[['Close', 'Predictions']])
+        df_2['Date'] = dt
+        df_2["Date"] = pd.to_datetime(df_2['Date'])
+
+        df = pd.concat([df_1,df_2])
+        df.set_index('Date', inplace=True)
+        df.set_index('Close', inplace=False)
+        # plot the pandas DataFrame, passing in the
+        # matplotlib Canvas axes.
+        df.plot(ax=self.axes)
+        #HistoryPlotWindow.setCentralWidget(sc)
+
+class MplCanvas_TreeDecision(FigureCanvasQTAgg):
+
+    def __init__(self, parent=None, width=5, height=4, dpi=100, filePath = ''):
+        fig = Figure(figsize=(width, height), dpi=dpi)
+        fig.suptitle("Close Price History")# name title
+        self.axes = fig.add_subplot(111)
+        self.axes.set_ylabel(ylabel="Close Price Price USD")
+        self.axes.set_xlabel(xlabel="Date")
+        FigureCanvasQTAgg.__init__(self,fig)
+        self.setParent(parent)
+        self.plot_value(filePath)
+
+    def plot_value(self,filePath):
+        df = pd.read_csv(filePath)
+        dt=df["Date"]
+        df['Date'] = pd.to_datetime(df['Date'])
+        df['Date']=df['Date'].map(dtime.datetime.toordinal)
+        #Create a variable to predict 'x' days out into the future
+        future_days = 60
+        #Create a new column (the target or dependent variable) shifted 'x' units/days up
+        df['Prediction'] = df[['Close']].shift(-future_days)
+        X = np.array(df.drop(['Prediction'], 1))[:-future_days]
+        y = np.array(df['Prediction'])[:-future_days]
+        
+        x_train, x_test, y_train, y_test = train_test_split(X, y, test_size = 0.25)
+        #Create the decision tree regressor model
+        tree = DecisionTreeRegressor().fit(x_train, y_train)
+
+        #Get the feature data, 
+        #AKA all the rows from the original data set except the last 'x' days
+        x_future = df.drop(['Prediction'], 1)[:-future_days]
+        #Get the last 'x' rows
+        x_future = x_future.tail(future_days) 
+        #Convert the data set into a numpy array
+        x_future = np.array(x_future)
+
+        #Show the model tree prediction
+        tree_prediction = tree.predict(x_future)
+
+        #Visualize the data
+        predictions = tree_prediction
+        #Plot the data
+        valid =  df[X.shape[0]:]
+        valid['Predictions'] = predictions #Create a new column called 'Predictions' that will hold the predicted prices
+        # Create our pandas DataFrame with some simple
+        # data and headers.
+        
         df_1= pd.DataFrame(df[['Close']])
         df_1['Date'] = dt
         df_1["Date"] = pd.to_datetime(df_1['Date'])
@@ -370,6 +434,8 @@ class Ui_MainWindow(object):
             sc.show()
             print()
             self.test(str)
+            self.Linear(str)
+            self.Tree(str)
             #ui = Ui_MainWindow()
             #ui.setupUi(MainWindow)
             
@@ -437,9 +503,9 @@ class Ui_MainWindow(object):
         model.add(Dense(25))
         model.add(Dense(1))
         model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-        #model.fit(x_train, y_train, batch_size=1, epochs=1)
+        model.fit(x_train, y_train, batch_size=1, epochs=1)
 
-        #joblib.dump(model,'trained_model.pkl')
+        joblib.dump(model,'trained_model.pkl')
         model_from_joblib=joblib.load('trained_model.pkl')
         test_data = scaled_data[training_data_len - 60: , :]
         #Create dataset x_test and y_test
@@ -463,8 +529,12 @@ class Ui_MainWindow(object):
 
 #region ???
     def Linear(self, filePath):
-        linearSc = MplCanvas_Linear(self.lnPredictDiagramGroupBox, width=6, height=3, dpi=100, filePath = self.dataFilePath)
+        linearSc = MplCanvas_Linear(self.lrPredictDiagramGroupBox, width=4, height=3, dpi=100, filePath = self.dataFilePath)
         linearSc.show()
+
+    def Tree(self, filePath):
+     	tree = MplCanvas_Linear(self.tdPredictDiagramGroupBox, width=4, height=3, dpi=100, filePath = self.dataFilePath)
+     	tree.show()
 
         
 #endregion
