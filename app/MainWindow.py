@@ -130,7 +130,7 @@ class MplCanvas_Linear(FigureCanvasQTAgg):
         df['Date'] = pd.to_datetime(df['Date'])
         df['Date']=df['Date'].map(dtime.datetime.toordinal)
         #Create a variable to predict 'x' days out into the future
-        future_days = 60
+        future_days = 1308
         #Create a new column (the target or dependent variable) shifted 'x' units/days up
         df['Prediction'] = df[['Close']].shift(-future_days)
         X = np.array(df.drop(['Prediction'], 1))[:-future_days]
@@ -195,7 +195,7 @@ class MplCanvas_TreeDecision(FigureCanvasQTAgg):
         df['Date'] = pd.to_datetime(df['Date'])
         df['Date']=df['Date'].map(dtime.datetime.toordinal)
         #Create a variable to predict 'x' days out into the future
-        future_days = 60
+        future_days = 1308
         #Create a new column (the target or dependent variable) shifted 'x' units/days up
         df['Prediction'] = df[['Close']].shift(-future_days)
         X = np.array(df.drop(['Prediction'], 1))[:-future_days]
@@ -277,17 +277,12 @@ class Ui_MainWindow(object):
         self.selectedLabel.setFont(font)
         self.selectedLabel.setObjectName("selectedLabel")
         self.datGroupBox = QtWidgets.QGroupBox(self.centralwidget)
-        self.datGroupBox.setGeometry(QtCore.QRect(10, 200, 1861, 1151))
+        self.datGroupBox.setGeometry(QtCore.QRect(10, 200, 1905, 1151))
         self.datGroupBox.setObjectName("datGroupBox")
         self.fileDataTableView = QtWidgets.QTableView(self.datGroupBox)
         self.fileDataTableView.setGeometry(QtCore.QRect(0, 30, 721, 341))
         self.fileDataTableView.setObjectName("fileDataTableView")
-        # self.dataComboBox = QtWidgets.QComboBox(self.datGroupBox)
-        # self.dataComboBox.setGeometry(QtCore.QRect(0, 380, 91, 31))
-        # self.dataComboBox.setObjectName("dataComboBox")
-        # self.showDataButton = QtWidgets.QPushButton(self.datGroupBox)
-        # self.showDataButton.setGeometry(QtCore.QRect(100, 380, 121, 41))
-        # self.showDataButton.setObjectName("showDataButton")
+
         self.plotHistoryGroupBox = QtWidgets.QGroupBox(self.datGroupBox)
         self.plotHistoryGroupBox.setGeometry(QtCore.QRect(760, 20, 651, 351))
         self.plotHistoryGroupBox.setObjectName("groupBox")
@@ -299,11 +294,11 @@ class Ui_MainWindow(object):
         self.predictDiagramGroupBox.setObjectName("groupBox_3")
 
         self.lrPredictDiagramGroupBox = QtWidgets.QGroupBox(self.datGroupBox)
-        self.lrPredictDiagramGroupBox.setGeometry(QtCore.QRect(1420,30,421,341))
+        self.lrPredictDiagramGroupBox.setGeometry(QtCore.QRect(1420,30,471,341))
         self.lrPredictDiagramGroupBox.setObjectName("groupBox_4")
 
         self.tdPredictDiagramGroupBox = QtWidgets.QGroupBox(self.datGroupBox)
-        self.tdPredictDiagramGroupBox.setGeometry(QtCore.QRect(1420,430,421,341))
+        self.tdPredictDiagramGroupBox.setGeometry(QtCore.QRect(1420,430,471,341))
         self.tdPredictDiagramGroupBox.setObjectName("groupBox_5")
         #self.showPredictionButton = QtWidgets.QPushButton(self.centralwidget)
         #self.showPredictionButton.setGeometry(QtCore.QRect(1160, 140, 121, 41))
@@ -503,9 +498,9 @@ class Ui_MainWindow(object):
         model.add(Dense(25))
         model.add(Dense(1))
         model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-        model.fit(x_train, y_train, batch_size=1, epochs=1)
+        #model.fit(x_train, y_train, batch_size=1, epochs=1)
 
-        joblib.dump(model,'trained_model.pkl')
+        #joblib.dump(model,'trained_model.pkl')
         model_from_joblib=joblib.load('trained_model.pkl')
         test_data = scaled_data[training_data_len - 60: , :]
         #Create dataset x_test and y_test
@@ -530,10 +525,12 @@ class Ui_MainWindow(object):
 #region ???
     def Linear(self, filePath):
         linearSc = MplCanvas_Linear(self.lrPredictDiagramGroupBox, width=4, height=3, dpi=100, filePath = self.dataFilePath)
+        linearSc.move(15,25)
         linearSc.show()
 
     def Tree(self, filePath):
-     	tree = MplCanvas_Linear(self.tdPredictDiagramGroupBox, width=4, height=3, dpi=100, filePath = self.dataFilePath)
+     	tree = MplCanvas_TreeDecision(self.tdPredictDiagramGroupBox, width=4, height=3, dpi=100, filePath = self.dataFilePath)
+     	tree.move(15,25)
      	tree.show()
 
         
