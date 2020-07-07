@@ -96,7 +96,7 @@ class MplCanvas_Predict(FigureCanvasQTAgg):
 
         df_1= pd.DataFrame(train[['Close']])
         df_1['Date'] = dt
-        print(df_1)
+        #print(df_1)
         df_1["Date"] = pd.to_datetime(df_1['Date'])
 
 
@@ -127,10 +127,11 @@ class MplCanvas_Linear(FigureCanvasQTAgg):
     def plot_value(self,filePath):
         df = pd.read_csv(filePath)
         dt=df["Date"]
+        training_data_len = math.ceil(len(df) * .25)
         df['Date'] = pd.to_datetime(df['Date'])
         df['Date']=df['Date'].map(dtime.datetime.toordinal)
         #Create a variable to predict 'x' days out into the future
-        future_days = 1308
+        future_days = training_data_len
         #Create a new column (the target or dependent variable) shifted 'x' units/days up
         df['Prediction'] = df[['Close']].shift(-future_days)
         X = np.array(df.drop(['Prediction'], 1))[:-future_days]
@@ -150,13 +151,19 @@ class MplCanvas_Linear(FigureCanvasQTAgg):
 
         #Show the model linear regression prediction
         lr_prediction = lr.predict(x_future)
-        print(lr_prediction)
+        #print(lr_prediction)
 
         #Visualize the data
         predictions = lr_prediction
+
+        print("MyLength")
+        print(len(predictions))
         #Plot the data
         valid =  df[X.shape[0]:]
         valid['Predictions'] = predictions #Create a new column called 'Predictions' that will hold the predicted prices
+        
+        myValid = pd.DataFrame[[valid[['Close','Predictions']]]]
+        print(myValid)
         # Create our pandas DataFrame with some simple
         # data and headers.
         
@@ -192,10 +199,11 @@ class MplCanvas_TreeDecision(FigureCanvasQTAgg):
     def plot_value(self,filePath):
         df = pd.read_csv(filePath)
         dt=df["Date"]
+        training_data_len = math.ceil(len(df) * .25)
         df['Date'] = pd.to_datetime(df['Date'])
         df['Date']=df['Date'].map(dtime.datetime.toordinal)
         #Create a variable to predict 'x' days out into the future
-        future_days = 1308
+        future_days = training_data_len
         #Create a new column (the target or dependent variable) shifted 'x' units/days up
         df['Prediction'] = df[['Close']].shift(-future_days)
         X = np.array(df.drop(['Prediction'], 1))[:-future_days]
@@ -384,7 +392,7 @@ class Ui_MainWindow(object):
     def dataComboBoxClicked(self, currentSelected):
         currentSelected = self.dataComboBox.currentText()
         self.currentPredictDataType = self.setCurrentPredictionType(currentSelected)
-        print(self.currentPredictDataType)
+        #print(self.currentPredictDataType)
 
     def setCurrentPredictionType(self, currentSelected):
         return {
@@ -427,7 +435,7 @@ class Ui_MainWindow(object):
             sc = MplCanvas(MainWindow, width=6, height=3, dpi=100, filePath = str)  # change in here
             sc.move(800,250)
             sc.show()
-            print()
+            #print()
             self.test(str)
             self.Linear(str)
             self.Tree(str)
