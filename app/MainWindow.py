@@ -114,7 +114,7 @@ class MplCanvas_Predict(FigureCanvasQTAgg):
 
 class MplCanvas_Linear(FigureCanvasQTAgg):
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100, filePath = ''):
+    def __init__(self, parent=None, width=5, height=4, dpi=100, filePath = '', output_LR = QtWidgets.QTextBrowser):
         fig = Figure(figsize=(width, height), dpi=dpi)
         fig.suptitle("Close Price History")# name title
         self.axes = fig.add_subplot(111)
@@ -122,9 +122,9 @@ class MplCanvas_Linear(FigureCanvasQTAgg):
         self.axes.set_xlabel(xlabel="Date")
         FigureCanvasQTAgg.__init__(self,fig)
         self.setParent(parent)
-        self.plot_value(filePath)
+        self.plot_value(filePath,output_LR)
 
-    def plot_value(self,filePath):
+    def plot_value(self,filePath,output_LR):
         df = pd.read_csv(filePath)
         dt=df["Date"]
         training_data_len = math.ceil(len(df) * .25)
@@ -161,9 +161,12 @@ class MplCanvas_Linear(FigureCanvasQTAgg):
         #Plot the data
         valid =  df[X.shape[0]:]
         valid['Predictions'] = predictions #Create a new column called 'Predictions' that will hold the predicted prices
-        
-        myValid = pd.DataFrame[[valid[['Close','Predictions']]]]
-        print(myValid)
+        myValid = valid[['Close', 'Predictions']]
+        #print(myValid)
+        output_LR.clear()
+        output_LR.append(myValid.to_string())
+        #myValid = pd.DataFrame[[valid[['Close','Predictions']]]]
+        #print(myValid)
         # Create our pandas DataFrame with some simple
         # data and headers.
         
@@ -186,7 +189,7 @@ class MplCanvas_Linear(FigureCanvasQTAgg):
 
 class MplCanvas_TreeDecision(FigureCanvasQTAgg):
 
-    def __init__(self, parent=None, width=5, height=4, dpi=100, filePath = ''):
+    def __init__(self, parent=None, width=5, height=4, dpi=100, filePath = '',output_TD = QtWidgets.QTextBrowser):
         fig = Figure(figsize=(width, height), dpi=dpi)
         fig.suptitle("Close Price History")# name title
         self.axes = fig.add_subplot(111)
@@ -194,9 +197,9 @@ class MplCanvas_TreeDecision(FigureCanvasQTAgg):
         self.axes.set_xlabel(xlabel="Date")
         FigureCanvasQTAgg.__init__(self,fig)
         self.setParent(parent)
-        self.plot_value(filePath)
+        self.plot_value(filePath,output_TD)
 
-    def plot_value(self,filePath):
+    def plot_value(self,filePath,output_TD):
         df = pd.read_csv(filePath)
         dt=df["Date"]
         training_data_len = math.ceil(len(df) * .25)
@@ -229,6 +232,9 @@ class MplCanvas_TreeDecision(FigureCanvasQTAgg):
         #Plot the data
         valid =  df[X.shape[0]:]
         valid['Predictions'] = predictions #Create a new column called 'Predictions' that will hold the predicted prices
+        myValid = valid[['Close','Predictions']]
+        output_TD.clear()
+        output_TD.append(myValid.to_string())
         # Create our pandas DataFrame with some simple
         # data and headers.
         
@@ -258,17 +264,14 @@ class Ui_MainWindow(object):
         self.currentPredictDataType = "Close"
         self.dataFilePath = ''
 
-    def openHistoryPlotWindow(self):
-        self.historyWindow = QtWidgets.QMainWindow()
-        self.ui = Ui_HistoryPlotWindow(self.currentPredictDataType, self.dataFilePath)
-        self.ui.setupUi(self.historyWindow)
-        self.historyWindow.show()
 
     def setupUi(self, MainWindow):
         MainWindow.setObjectName("MainWindow")
+        #MainWindow.setStyleSheet("background-color: gray;")
         MainWindow.resize(1436, 1139)
         self.centralwidget = QtWidgets.QWidget(MainWindow)
         self.centralwidget.setObjectName("centralwidget")
+        #MainWindow.showFullScreen()
         self.browseGroupBox = QtWidgets.QGroupBox(self.centralwidget)
         self.browseGroupBox.setGeometry(QtCore.QRect(30, 10, 671, 121))
         self.browseGroupBox.setObjectName("browseGroupBox")
@@ -302,11 +305,11 @@ class Ui_MainWindow(object):
         self.predictDiagramGroupBox.setObjectName("groupBox_3")
 
         self.lrPredictDiagramGroupBox = QtWidgets.QGroupBox(self.datGroupBox)
-        self.lrPredictDiagramGroupBox.setGeometry(QtCore.QRect(1420,30,471,341))
+        self.lrPredictDiagramGroupBox.setGeometry(QtCore.QRect(1420,30,501,341))
         self.lrPredictDiagramGroupBox.setObjectName("groupBox_4")
 
         self.tdPredictDiagramGroupBox = QtWidgets.QGroupBox(self.datGroupBox)
-        self.tdPredictDiagramGroupBox.setGeometry(QtCore.QRect(1420,430,471,341))
+        self.tdPredictDiagramGroupBox.setGeometry(QtCore.QRect(1420,430,501,341))
         self.tdPredictDiagramGroupBox.setObjectName("groupBox_5")
         #self.showPredictionButton = QtWidgets.QPushButton(self.centralwidget)
         #self.showPredictionButton.setGeometry(QtCore.QRect(1160, 140, 121, 41))
@@ -320,8 +323,16 @@ class Ui_MainWindow(object):
         self.statusbar.setObjectName("statusbar")
         MainWindow.setStatusBar(self.statusbar)
         self.output_rd = QtWidgets.QTextBrowser(self.predictDataGroupBox)
-        self.output_rd.setGeometry(QtCore.QRect(10, 25, 700, 300))
+        self.output_rd.setGeometry(QtCore.QRect(10, 25, 220, 320))
         self.output_rd.setObjectName("output_rd")
+
+        self.output_rd_LR = QtWidgets.QTextBrowser(self.predictDataGroupBox)
+        self.output_rd_LR.setGeometry(QtCore.QRect(250, 25, 220, 320))
+        self.output_rd_LR.setObjectName("output_rd_lr")
+
+        self.output_rd_TD = QtWidgets.QTextBrowser(self.predictDataGroupBox)
+        self.output_rd_TD.setGeometry(QtCore.QRect(490, 25, 220, 320))
+        self.output_rd_TD.setObjectName("output_rd_td")
 
 
         #self.addDataToDataComboBox()
@@ -351,10 +362,7 @@ class Ui_MainWindow(object):
         #self.showPredictionButton.setText(_translate("MainWindow", "Show Prediction"))
 
     def addEvent(self):
-        #self.dataComboBoxEvent()
         self.browseEvent()
-        #self.plotHistoryData()
-        #self.browseButton_Test.clicked.connect(self.test)
 
     # region update_csv
     def getCsvLastModified(self):
@@ -385,22 +393,6 @@ class Ui_MainWindow(object):
         # Connect dataComboBox to change selected option
         self.dataComboBox.currentTextChanged.connect(self.dataComboBoxClicked)
 
-    def addDataToDataComboBox(self):
-        # Add options
-        self.dataComboBox.addItems(["Close Price", "Open Price", "Highest", "Lowest"])
-
-    def dataComboBoxClicked(self, currentSelected):
-        currentSelected = self.dataComboBox.currentText()
-        self.currentPredictDataType = self.setCurrentPredictionType(currentSelected)
-        #print(self.currentPredictDataType)
-
-    def setCurrentPredictionType(self, currentSelected):
-        return {
-            'Close Price': 'Close',
-            'Open Price': 'Open',
-            'Highest': 'High',
-            'Lowest': 'Low'
-        }.get(currentSelected, 'Close')
 
     # endregion
 
@@ -457,6 +449,7 @@ class Ui_MainWindow(object):
 
     # Populate dataTableView with data in the file
     def loadCsv(self, fileName):
+        self.model.clear()
         with open(fileName, "r") as fileInput:
             for row in csv.reader(fileInput):
                 items = [
@@ -506,10 +499,13 @@ class Ui_MainWindow(object):
         model.add(Dense(25))
         model.add(Dense(1))
         model.compile(optimizer = 'adam', loss = 'mean_squared_error')
-        #model.fit(x_train, y_train, batch_size=1, epochs=1)
 
-        #joblib.dump(model,'trained_model.pkl')
-        model_from_joblib=joblib.load('trained_model.pkl')
+        checkFileName = self.dataFileName + '.pkl'
+        if(os.path.isfile('./' + checkFileName) == False):
+            model.fit(x_train, y_train, batch_size=1, epochs=1)
+            joblib.dump(model,checkFileName)
+
+        model_from_joblib=joblib.load(checkFileName)
         test_data = scaled_data[training_data_len - 60: , :]
         #Create dataset x_test and y_test
         x_test= []
@@ -524,6 +520,7 @@ class Ui_MainWindow(object):
         valid = data[training_data_len:]
         valid['Predictions'] = predictions
         #print(valid)
+        self.output_rd.clear()
         self.output_rd.append(valid.to_string())
         predictSc= MplCanvas_Predict(self.predictDiagramGroupBox, width=6, height=3, dpi=100, filePath = str,data = df.filter(['Close']), training_data_len = training_data_len, predictions = predictions)
         predictSc.move(15,25)
@@ -531,14 +528,14 @@ class Ui_MainWindow(object):
 # endregion
 
 #region ???
-    def Linear(self, filePath):
-        linearSc = MplCanvas_Linear(self.lrPredictDiagramGroupBox, width=4, height=3, dpi=100, filePath = self.dataFilePath)
-        linearSc.move(15,25)
+    def Linear(self, filePath, ):
+        linearSc = MplCanvas_Linear(self.lrPredictDiagramGroupBox, width=5, height=3, dpi=100, filePath = self.dataFilePath,output_LR = self.output_rd_LR)
+        linearSc.move(5,25)
         linearSc.show()
 
     def Tree(self, filePath):
-     	tree = MplCanvas_TreeDecision(self.tdPredictDiagramGroupBox, width=4, height=3, dpi=100, filePath = self.dataFilePath)
-     	tree.move(15,25)
+     	tree = MplCanvas_TreeDecision(self.tdPredictDiagramGroupBox, width=5, height=3, dpi=100, filePath = self.dataFilePath,output_TD = self.output_rd_TD)
+     	tree.move(5,25)
      	tree.show()
 
         
